@@ -8,26 +8,35 @@ export default class ElectroAudiogram {
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d')!;
-        this.init();
+        this.initCanvas();
+        this.drawBorder();
     }
 
-    private init() {
+    // 初始化 Canvas 样式和尺寸
+    private initCanvas() {
         this.canvas.style.border = '1px solid #ececec';
         this.canvas.width = this.width;
         this.canvas.height = this.height;
-        this.ctx.font = "14px sans-serif"
-        this.ctx.textAlign = "right"
-        this.ctx.fillStyle = "gray"
+        this.setCanvasStyle();
+    }
 
+    // 设置 Canvas 绘制样式
+    private setCanvasStyle() {
+        this.ctx.font = '14px sans-serif';
+        this.ctx.textAlign = 'right';
+        this.ctx.fillStyle = 'gray';
+    }
+
+    // 绘制矩形边框
+    private drawBorder() {
         this.ctx.beginPath();
-        this.ctx.moveTo(this.margin, this.margin);
-        this.ctx.lineTo(this.margin, this.height);
-        this.ctx.moveTo(this.margin, this.margin);
-        this.ctx.lineTo(this.width, this.margin);
-        this.ctx.moveTo(this.width, this.margin);
-        this.ctx.lineTo(this.width, this.height);
-        this.ctx.moveTo(this.width, this.height);
-        this.ctx.lineTo(this.margin, this.height);
+        this.ctx.rect(
+            this.margin,
+            this.margin,
+            this.width - 2 * this.margin,
+            this.height - 2 * this.margin
+        ); 
+        this.ctx.closePath(); 
         this.ctx.stroke();
     }
 }
