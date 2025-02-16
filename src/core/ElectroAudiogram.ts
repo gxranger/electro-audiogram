@@ -104,6 +104,8 @@ export default class ElectroAudiogram {
                 this.ctx.fillText(`${xAxisValues[i]}`,  textXPosition, labelYPosition);
             }
         }
+
+        this.ctx.lineWidth = lineWidth;
         this.ctx.stroke();
 
     }
