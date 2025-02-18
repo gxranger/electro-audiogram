@@ -42,6 +42,7 @@ export default class ElectroAudiogram {
         this.drawBorder();
         this.drawXAxis();
         this.drawYAxis();
+        this.drawThresholdLine()
     }
 
     /**
@@ -142,6 +143,20 @@ export default class ElectroAudiogram {
         }
 
         this.ctx.lineWidth = lineWidth;
+        this.ctx.stroke();
+    }
+
+    /**
+     * 绘制标准线
+     */
+    private drawThresholdLine() {
+        this.ctx.beginPath();
+
+        const y = (this.height / ElectroAudiogram.Y_AXIS_VALUES.length) * 0.95 * 4.5
+        this.ctx.setLineDash([5, 10]);
+        this.ctx.moveTo(this.margin, y);
+        this.ctx.lineTo(this.canvas.width, y);
+        this.ctx.strokeStyle = "#000"
         this.ctx.stroke();
     }
 }
