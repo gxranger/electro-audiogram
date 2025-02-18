@@ -1,9 +1,9 @@
 export default class ElectroAudiogram {
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
-    private width = 1000;
-    private height = 520;
-    private margin = 35;
+    private width = 580;
+    private height = 580;
+    private margin = 40;
 
     private static readonly Y_AXIS_VALUES = [
         -10,
@@ -84,17 +84,19 @@ export default class ElectroAudiogram {
     private drawXAxis(){
         this.ctx.beginPath();
         const xAxisTitle = '频率';
-        const titleGap = this.margin*1.6;
-        const labelYPosition = this.margin/1.6;
+        const labelYPosition = this.margin * 0.8;
+        const titleXPosition =  this.margin * 1.5;
         const lineWidth = 0.3;
         const xAxisValues = Object.keys(ElectroAudiogram.X_AXIS_VALUES);
 
-        this.ctx.fillText(xAxisTitle, titleGap, labelYPosition);
+        this.ctx.fillText(xAxisTitle,titleXPosition, labelYPosition);
 
 
-        for (let i = 0; i <= xAxisValues.length; i++) {
-            const xAxisGap = this.margin*(i+1) + (this.canvas.height / xAxisValues.length)*i;
-            const textXPosition = xAxisGap + this.margin*2.8;
+        let xAxisGap = this.margin;
+        for (let i = 0; i < xAxisValues.length; i++) {
+            xAxisGap += (this.width / xAxisValues.length) * 0.95;
+            const textXPosition = xAxisGap + 10;
+            
             // 绘制刻度线
             this.ctx.moveTo(xAxisGap, this.margin);
             this.ctx.lineTo(xAxisGap, this.canvas.height);
@@ -116,7 +118,7 @@ export default class ElectroAudiogram {
     private drawYAxis(){
         this.ctx.beginPath();
 
-        const labelGap = this.margin - 5;
+        const labelGap = this.margin * 0.8;
         const yAxisTitle = '分贝';
         const labelYPosition = this.margin + 10;
         const lineWidth = 0.3;
@@ -124,9 +126,10 @@ export default class ElectroAudiogram {
 
         this.ctx.fillText(yAxisTitle, labelGap, labelYPosition);
 
+        let yAxisGap = this.margin;
         for (let i = 0; i <= yAxisValues.length; i++) {
-            const yAxisGap = this.margin*(i+1);
-            const textYPosition = i * this.margin + this.margin * 2.15;
+            yAxisGap += (this.height / yAxisValues.length) * 0.95;
+            const textYPosition = yAxisGap + 5;
             
             // 绘制刻度线
             this.ctx.moveTo(this.margin, yAxisGap);
