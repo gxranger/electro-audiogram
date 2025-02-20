@@ -4,6 +4,9 @@ export default class ElectroAudiogram {
     private width = 580;
     private height = 580;
     private margin = 40;
+    private xGap = 0;
+    private yGap = 0;
+    private static readonly SCALE_RATIO = 0.95;
 
     private static readonly Y_AXIS_VALUES = [
         -10,
@@ -49,6 +52,11 @@ export default class ElectroAudiogram {
      * 初始化 Canvas 样式和尺寸
      */
     private initCanvas() {
+        const xTotal = Object.keys(ElectroAudiogram.X_AXIS_VALUES).length;
+        const yTotal = ElectroAudiogram.Y_AXIS_VALUES.length;
+        this.xGap = (this.width / xTotal) * ElectroAudiogram.SCALE_RATIO;
+        this.yGap = (this.height / yTotal) * ElectroAudiogram.SCALE_RATIO;
+
         this.canvas.style.border = '1px solid #ececec';
         this.canvas.width = this.width + this.margin;
         this.canvas.height = this.height + this.margin;
@@ -80,6 +88,21 @@ export default class ElectroAudiogram {
     }
 
     /**
+     * 计算X位置
+     */
+    private computedXPosition(count: number){
+        return  (this.xGap * count) + this.margin;
+    }
+
+    /**
+     * 计算Y位置
+     */
+    private computedYPosition(count: number){
+        return  (this.yGap * count) + this.margin;
+    }
+        
+
+    /**
      * 绘制X轴网格
      */
     private drawXAxis(){
@@ -93,9 +116,8 @@ export default class ElectroAudiogram {
         this.ctx.fillText(xAxisTitle,titleXPosition, labelYPosition);
 
 
-        let xAxisGap = this.margin;
         for (let i = 0; i < xAxisValues.length; i++) {
-            xAxisGap += (this.width / xAxisValues.length) * 0.95;
+            const xAxisGap = this.computedXPosition(i + 1);
             const textXPosition = xAxisGap + 10;
             
             // 绘制刻度线
@@ -127,9 +149,8 @@ export default class ElectroAudiogram {
 
         this.ctx.fillText(yAxisTitle, labelGap, labelYPosition);
 
-        let yAxisGap = this.margin;
         for (let i = 0; i <= yAxisValues.length; i++) {
-            yAxisGap += (this.height / yAxisValues.length) * 0.95;
+            const yAxisGap = this.computedYPosition(i + 1);
             const textYPosition = yAxisGap + 5;
             
             // 绘制刻度线
@@ -151,8 +172,7 @@ export default class ElectroAudiogram {
      */
     private drawThresholdLine() {
         this.ctx.beginPath();
-
-        const y = (this.height / ElectroAudiogram.Y_AXIS_VALUES.length) * 0.95 * 4.5
+        const y = this.computedYPosition(3.5)
         this.ctx.setLineDash([5, 10]);
         this.ctx.moveTo(this.margin, y);
         this.ctx.lineTo(this.canvas.width, y);
