@@ -24,6 +24,8 @@ export default class ElectroAudiogram {
         110,
         120,
     ];
+    private valuesYMap = new Map();
+
     private static readonly X_AXIS_VALUES = {
         '125':125,
         '250':250,
@@ -37,10 +39,13 @@ export default class ElectroAudiogram {
         '10K':10000,
         '12K':12000,
     };
+    private valuesXMap = new Map();
+
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d')!;
+        this.initXYData();
         this.initCanvas();
         this.drawBorder();
         this.drawXAxis();
@@ -49,14 +54,30 @@ export default class ElectroAudiogram {
     }
 
     /**
+     * 初始化 X、Y 相关数据
+     */
+    private initXYData(){
+        const yValues = ElectroAudiogram.Y_AXIS_VALUES;
+        const xValues = Object.keys(ElectroAudiogram.X_AXIS_VALUES);
+        this.xGap = (this.width / xValues.length) * ElectroAudiogram.SCALE_RATIO;
+        this.yGap = (this.height /  yValues.length) * ElectroAudiogram.SCALE_RATIO;
+
+        xValues.forEach((key, index) => {
+            const value = Reflect.get(ElectroAudiogram.X_AXIS_VALUES, key);
+            this.valuesXMap.set(value, index + 1);
+        });
+
+        yValues.forEach((valueY, index) => {
+            const count = index + 1;
+            this.valuesYMap.set(`${valueY}`, count);
+            this.valuesYMap.set(`${valueY + 5}`, count + 0.5);
+        });
+    }
+
+    /**
      * 初始化 Canvas 样式和尺寸
      */
     private initCanvas() {
-        const xTotal = Object.keys(ElectroAudiogram.X_AXIS_VALUES).length;
-        const yTotal = ElectroAudiogram.Y_AXIS_VALUES.length;
-        this.xGap = (this.width / xTotal) * ElectroAudiogram.SCALE_RATIO;
-        this.yGap = (this.height / yTotal) * ElectroAudiogram.SCALE_RATIO;
-
         this.canvas.style.border = '1px solid #ececec';
         this.canvas.width = this.width + this.margin;
         this.canvas.height = this.height + this.margin;
@@ -95,10 +116,27 @@ export default class ElectroAudiogram {
     }
 
     /**
+     * X轴值与坐标位置映射
+     */
+    private xAxisPositionMap(valueX: number) { 
+        const xPoint = this.valuesXMap.get(valueX);
+        return this.computedXPosition(xPoint);
+        
+    }
+
+    /**
      * 计算Y位置
      */
     private computedYPosition(count: number){
         return  (this.yGap * count) + this.margin;
+    }
+
+    /**
+     * Y轴值与坐标位置映射
+     */
+    private yAxisPositionMap(valueY: number) { 
+        const yPoint = this.valuesYMap.get(`${valueY}`);
+        return this.computedYPosition(yPoint);
     }
         
 
@@ -172,7 +210,8 @@ export default class ElectroAudiogram {
      */
     private drawThresholdLine() {
         this.ctx.beginPath();
-        const y = this.computedYPosition(3.5)
+        const y = this.yAxisPositionMap(25);
+        
         this.ctx.setLineDash([5, 10]);
         this.ctx.moveTo(this.margin, y);
         this.ctx.lineTo(this.canvas.width, y);
