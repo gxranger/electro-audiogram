@@ -1,3 +1,5 @@
+import { Frequency } from "./Frequency";
+
 export default class ElectroAudiogram {
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
@@ -8,7 +10,7 @@ export default class ElectroAudiogram {
     private yGap = 0;
     private static readonly SCALE_RATIO = 0.95;
 
-    private static readonly Y_AXIS_VALUES = [
+    private static readonly DECIBEL_VALUES = [
         -10,
         0,
         10,
@@ -24,9 +26,9 @@ export default class ElectroAudiogram {
         110,
         120,
     ];
-    private valuesYMap = new Map();
+    private decibelValuesMap = new Map();
 
-    private static readonly X_AXIS_VALUES = {
+    private static readonly FREQUENCY_VALUES = {
         '125':125,
         '250':250,
         '500':500,
@@ -39,7 +41,7 @@ export default class ElectroAudiogram {
         '10K':10000,
         '12K':12000,
     };
-    private valuesXMap = new Map();
+    private frequencyValuesMap = new Map();
 
 
     constructor(canvas: HTMLCanvasElement) {
@@ -57,20 +59,20 @@ export default class ElectroAudiogram {
      * 初始化 X、Y 相关数据
      */
     private initXYData(){
-        const yValues = ElectroAudiogram.Y_AXIS_VALUES;
-        const xValues = Object.keys(ElectroAudiogram.X_AXIS_VALUES);
+        const yValues = ElectroAudiogram.DECIBEL_VALUES;
+        const xValues = Object.keys(ElectroAudiogram.FREQUENCY_VALUES);
         this.xGap = (this.width / xValues.length) * ElectroAudiogram.SCALE_RATIO;
         this.yGap = (this.height /  yValues.length) * ElectroAudiogram.SCALE_RATIO;
 
         xValues.forEach((key, index) => {
-            const value = Reflect.get(ElectroAudiogram.X_AXIS_VALUES, key);
-            this.valuesXMap.set(value, index + 1);
+            const value = Reflect.get(ElectroAudiogram.FREQUENCY_VALUES, key);
+            this.frequencyValuesMap.set(value, index + 1);
         });
 
         yValues.forEach((valueY, index) => {
             const count = index + 1;
-            this.valuesYMap.set(`${valueY}`, count);
-            this.valuesYMap.set(`${valueY + 5}`, count + 0.5);
+            this.decibelValuesMap.set(`${valueY}`, count);
+            this.decibelValuesMap.set(`${valueY + 5}`, count + 0.5);
         });
     }
 
@@ -119,7 +121,7 @@ export default class ElectroAudiogram {
      * X轴值与坐标位置映射
      */
     private xAxisPositionMap(valueX: number) { 
-        const xPoint = this.valuesXMap.get(valueX);
+        const xPoint = this.frequencyValuesMap.get(valueX);
         return this.computedXPosition(xPoint);
         
     }
@@ -135,7 +137,7 @@ export default class ElectroAudiogram {
      * Y轴值与坐标位置映射
      */
     private yAxisPositionMap(valueY: number) { 
-        const yPoint = this.valuesYMap.get(`${valueY}`);
+        const yPoint = this.decibelValuesMap.get(`${valueY}`);
         return this.computedYPosition(yPoint);
     }
         
@@ -149,10 +151,9 @@ export default class ElectroAudiogram {
         const labelYPosition = this.margin * 0.8;
         const titleXPosition =  this.margin * 1.5;
         const lineWidth = 0.3;
-        const xAxisValues = Object.keys(ElectroAudiogram.X_AXIS_VALUES);
+        const xAxisValues = Object.keys(ElectroAudiogram.FREQUENCY_VALUES);
 
         this.ctx.fillText(xAxisTitle,titleXPosition, labelYPosition);
-
 
         for (let i = 0; i < xAxisValues.length; i++) {
             const xAxisGap = this.computedXPosition(i + 1);
@@ -161,7 +162,7 @@ export default class ElectroAudiogram {
             // 绘制刻度线
             this.ctx.moveTo(xAxisGap, this.margin);
             this.ctx.lineTo(xAxisGap, this.canvas.height);
-            
+            Frequency.getLabel()
             // 绘制刻度值
             if (i < xAxisValues.length) {
                 this.ctx.fillText(`${xAxisValues[i]}`,  textXPosition, labelYPosition);
@@ -183,7 +184,7 @@ export default class ElectroAudiogram {
         const yAxisTitle = '分贝';
         const labelYPosition = this.margin + 10;
         const lineWidth = 0.3;
-        const yAxisValues = ElectroAudiogram.Y_AXIS_VALUES;
+        const yAxisValues = ElectroAudiogram.DECIBEL_VALUES;
 
         this.ctx.fillText(yAxisTitle, labelGap, labelYPosition);
 
