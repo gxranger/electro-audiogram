@@ -32,6 +32,12 @@ export enum FrequencyEnum {
     F10000 = 10000,
     F12000 = 12000
 }
+export type FrequencyValue = typeof FrequencyEnum[keyof typeof FrequencyEnum];
+export type FrequencyLabel = '125' | '250' | '500' | '1k' | '2k' | '3k' | '4k' | '6k' | '8k' | '10k' | '12k';
+
+export type FrequencyLabelMap = {
+  [K in FrequencyLabel]: FrequencyEnum;
+};
 
 /**
  * 数据描述类型

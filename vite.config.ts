@@ -2,6 +2,9 @@ import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
 
 export default defineConfig({
+  resolve: {
+    extensions: ['.ts', '.js', '.json']
+  },
   build: {
     lib: {
       entry: 'src/index.ts',

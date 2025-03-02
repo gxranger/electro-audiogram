@@ -6,7 +6,7 @@ export default class ElectroAudiogram {
     private width = 580;
     private height = 580;
     private margin = 40;
-    private xGap = 0;
+    private frequencyGap = 0;
     private yGap = 0;
     private static readonly SCALE_RATIO = 0.95;
 
@@ -61,13 +61,15 @@ export default class ElectroAudiogram {
     private initXYData(){
         const yValues = ElectroAudiogram.DECIBEL_VALUES;
         const xValues = Object.keys(ElectroAudiogram.FREQUENCY_VALUES);
-        this.xGap = (this.width / xValues.length) * ElectroAudiogram.SCALE_RATIO;
+        this.frequencyGap = Frequency.getGap(this.width, ElectroAudiogram.SCALE_RATIO);
         this.yGap = (this.height /  yValues.length) * ElectroAudiogram.SCALE_RATIO;
 
         xValues.forEach((key, index) => {
             const value = Reflect.get(ElectroAudiogram.FREQUENCY_VALUES, key);
+            console.log("🚀 ~ ElectroAudiogram ~ xValues.forEach ~ value:", value);
             this.frequencyValuesMap.set(value, index + 1);
         });
+            console.log("🚀 ~ ElectroAudiogram ~ xValues.forEach ~ this.frequencyValuesMap:", this.frequencyValuesMap);
 
         yValues.forEach((valueY, index) => {
             const count = index + 1;
@@ -114,7 +116,7 @@ export default class ElectroAudiogram {
      * 计算X位置
      */
     private computedXPosition(count: number){
-        return  (this.xGap * count) + this.margin;
+        return  (this.frequencyGap * count) + this.margin;
     }
 
     /**
@@ -162,10 +164,10 @@ export default class ElectroAudiogram {
             // 绘制刻度线
             this.ctx.moveTo(xAxisGap, this.margin);
             this.ctx.lineTo(xAxisGap, this.canvas.height);
-            Frequency.getLabel()
-            // 绘制刻度值
+
+            // 绘制刻度label
             if (i < xAxisValues.length) {
-                this.ctx.fillText(`${xAxisValues[i]}`,  textXPosition, labelYPosition);
+                this.ctx.fillText(`${Frequency.getIndexOfLabel(i)}`,  textXPosition, labelYPosition);
             }
         }
 
