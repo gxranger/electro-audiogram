@@ -1,90 +1,60 @@
+import { Decibel } from "./Decibel";
 import { Frequency } from "./Frequency";
 
 export default class ElectroAudiogram {
     private canvas: HTMLCanvasElement;
     private ctx: CanvasRenderingContext2D;
-    private width = 580;
-    private height = 580;
+    private gridDimension = 580;
     private margin = 40;
-    private frequencyGap = 0;
-    private yGap = 0;
-    private static readonly SCALE_RATIO = 0.95;
-
-    private static readonly DECIBEL_VALUES = [
-        -10,
-        0,
-        10,
-        20,
-        30,
-        40,
-        50,
-        60,
-        70,
-        80,
-        90,
-        100,
-        110,
-        120,
-    ];
-    private decibelValuesMap = new Map();
-
-    private static readonly FREQUENCY_VALUES = {
-        '125':125,
-        '250':250,
-        '500':500,
-        '1K':1000,
-        '2K':2000,
-        '3K':3000,
-        '4K':4000,
-        '6K':6000,
-        '8K':8000,
-        '10K':10000,
-        '12K':12000,
-    };
-    private frequencyValuesMap = new Map();
+    private xAisGap = 0;
+    private yAisGap = 0;
+    private frequency!: Frequency;
+    private decibel!:Decibel;
 
 
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d')!;
-        this.initXYData();
+        this.initAxisGapData();
         this.initCanvas();
         this.drawBorder();
         this.drawXAxis();
         this.drawYAxis();
-        this.drawThresholdLine()
+        this.drawThresholdLine();
     }
 
     /**
-     * 初始化 X、Y 相关数据
+     * 计算X轴线间距
      */
-    private initXYData(){
-        const yValues = ElectroAudiogram.DECIBEL_VALUES;
-        const xValues = Object.keys(ElectroAudiogram.FREQUENCY_VALUES);
-        this.frequencyGap = Frequency.getGap(this.width, ElectroAudiogram.SCALE_RATIO);
-        this.yGap = (this.height /  yValues.length) * ElectroAudiogram.SCALE_RATIO;
+    private computedXAxisGap() {
+        const frequencyTotal = this.frequency.getLabels().length;
+        return this.gridDimension / frequencyTotal;
+    }
 
-        xValues.forEach((key, index) => {
-            const value = Reflect.get(ElectroAudiogram.FREQUENCY_VALUES, key);
-            console.log("🚀 ~ ElectroAudiogram ~ xValues.forEach ~ value:", value);
-            this.frequencyValuesMap.set(value, index + 1);
-        });
-            console.log("🚀 ~ ElectroAudiogram ~ xValues.forEach ~ this.frequencyValuesMap:", this.frequencyValuesMap);
+    /**
+     * 计算Y轴线间距
+     */
+    private computedYAxisGap() {
+        const labels = this.decibel.getLabels();
+        const displayDecibelTotal = labels.filter(item => !item.includes('5')).length;
+        return this.gridDimension / displayDecibelTotal;
+    }
 
-        yValues.forEach((valueY, index) => {
-            const count = index + 1;
-            this.decibelValuesMap.set(`${valueY}`, count);
-            this.decibelValuesMap.set(`${valueY + 5}`, count + 0.5);
-        });
+    /**
+     * 初始化 X、Y 轴线间距数据
+     */
+    private initAxisGapData(){
+        this.xAisGap = this.computedXAxisGap();
+        this.yAisGap = this.computedYAxisGap();
+        this.decibel = new Decibel(this.yAisGap);
     }
 
     /**
      * 初始化 Canvas 样式和尺寸
      */
     private initCanvas() {
-        this.canvas.style.border = '1px solid #ececec';
-        this.canvas.width = this.width + this.margin;
-        this.canvas.height = this.height + this.margin;
+        this.canvas.width = this.gridDimension + (this.margin * 2.5);
+        this.canvas.height = this.gridDimension + (this.margin * 2);
         this.setCanvasStyle();
     }
 
@@ -92,9 +62,9 @@ export default class ElectroAudiogram {
      * 设置 Canvas 绘制样式
      */
     private setCanvasStyle() {
-        this.ctx.font = '14px sans-serif';
+        this.ctx.font = '15px sans-serif';
         this.ctx.textAlign = 'right';
-        this.ctx.fillStyle = 'gray';
+        this.ctx.fillStyle = 'black';
     }
 
     /**
@@ -103,44 +73,13 @@ export default class ElectroAudiogram {
     private drawBorder() {
         this.ctx.beginPath();
         this.ctx.rect(
+            this.margin + 8,
             this.margin,
-            this.margin,
-            this.width,
-            this.height
+            this.gridDimension + this.margin + 10,
+            this.gridDimension + this.margin
         ); 
         this.ctx.closePath(); 
         this.ctx.stroke();
-    }
-
-    /**
-     * 计算X位置
-     */
-    private computedXPosition(count: number){
-        return  (this.frequencyGap * count) + this.margin;
-    }
-
-    /**
-     * X轴值与坐标位置映射
-     */
-    private xAxisPositionMap(valueX: number) { 
-        const xPoint = this.frequencyValuesMap.get(valueX);
-        return this.computedXPosition(xPoint);
-        
-    }
-
-    /**
-     * 计算Y位置
-     */
-    private computedYPosition(count: number){
-        return  (this.yGap * count) + this.margin;
-    }
-
-    /**
-     * Y轴值与坐标位置映射
-     */
-    private yAxisPositionMap(valueY: number) { 
-        const yPoint = this.decibelValuesMap.get(`${valueY}`);
-        return this.computedYPosition(yPoint);
     }
         
 
@@ -149,31 +88,30 @@ export default class ElectroAudiogram {
      */
     private drawXAxis(){
         this.ctx.beginPath();
-        const xAxisTitle = '频率';
-        const labelYPosition = this.margin * 0.8;
-        const titleXPosition =  this.margin * 1.5;
+
         const lineWidth = 0.3;
-        const xAxisValues = Object.keys(ElectroAudiogram.FREQUENCY_VALUES);
+        const labels = this.frequency.getLabels();
+        let gap = this.xAisGap;
 
-        this.ctx.fillText(xAxisTitle,titleXPosition, labelYPosition);
-
-        for (let i = 0; i < xAxisValues.length; i++) {
-            const xAxisGap = this.computedXPosition(i + 1);
-            const textXPosition = xAxisGap + 10;
+        for (let i = 0; i < labels.length; i++) {
+            gap += this.xAisGap;
             
             // 绘制刻度线
-            this.ctx.moveTo(xAxisGap, this.margin);
-            this.ctx.lineTo(xAxisGap, this.canvas.height);
+            this.ctx.moveTo(gap, this.margin);
+            this.ctx.lineTo(gap, this.canvas.height);
 
-            // 绘制刻度label
-            if (i < xAxisValues.length) {
-                this.ctx.fillText(`${Frequency.getIndexOfLabel(i)}`,  textXPosition, labelYPosition);
+            // 绘制频率label
+            if (i < labels.length) {
+                this.ctx.fillText(
+                    labels[i],
+                    gap + 15, 
+                    this.margin * 0.7,
+                );
             }
         }
 
         this.ctx.lineWidth = lineWidth;
         this.ctx.stroke();
-
     }
 
     /**
@@ -181,27 +119,22 @@ export default class ElectroAudiogram {
      */
     private drawYAxis(){
         this.ctx.beginPath();
-
-        const labelGap = this.margin * 0.8;
-        const yAxisTitle = '分贝';
-        const labelYPosition = this.margin + 10;
+        
         const lineWidth = 0.3;
-        const yAxisValues = ElectroAudiogram.DECIBEL_VALUES;
+        const labels = this.decibel.getLabels().filter(item => !item.includes('5'));
 
-        this.ctx.fillText(yAxisTitle, labelGap, labelYPosition);
+        let gap = this.yAisGap - 5;
 
-        for (let i = 0; i <= yAxisValues.length; i++) {
-            const yAxisGap = this.computedYPosition(i + 1);
-            const textYPosition = yAxisGap + 5;
+        for (let i = 0; i < labels.length; i++) {
+            gap += this.yAisGap;
+            const textYPosition = gap + 5;
             
             // 绘制刻度线
-            this.ctx.moveTo(this.margin, yAxisGap);
-            this.ctx.lineTo(this.canvas.width, yAxisGap);
+            this.ctx.moveTo(this.margin, gap);
+            this.ctx.lineTo(this.canvas.width, gap);
             
             // 绘制刻度值
-            if (i < yAxisValues.length) {
-                this.ctx.fillText(`${yAxisValues[i]}`, labelGap, textYPosition);
-            }
+            this.ctx.fillText(labels[i], this.margin + 6, textYPosition);
         }
 
         this.ctx.lineWidth = lineWidth;
@@ -212,13 +145,23 @@ export default class ElectroAudiogram {
      * 绘制标准线
      */
     private drawThresholdLine() {
-        this.ctx.beginPath();
-        const y = this.yAxisPositionMap(25);
+        // const y = this.decibel.mapYPosition(25);
         
+        // this.ctx.beginPath();
+        // this.ctx.setLineDash([5, 10]);
+        // this.ctx.moveTo(this.margin + 10, y);
+        // this.ctx.lineTo(this.canvas.width, y);
+        // this.ctx.lineWidth = 1;
+        // this.ctx.strokeStyle = "#E74133"
+        // this.ctx.stroke();
+        const y = this.decibel.mapYPosition(25);
+        
+        this.ctx.beginPath();
         this.ctx.setLineDash([5, 10]);
-        this.ctx.moveTo(this.margin, y);
+        this.ctx.moveTo(this.margin + 10, y);
         this.ctx.lineTo(this.canvas.width, y);
-        this.ctx.strokeStyle = "#000"
+        this.ctx.lineWidth = 1;
+        this.ctx.strokeStyle = "#E74133"
         this.ctx.stroke();
     }
 }
