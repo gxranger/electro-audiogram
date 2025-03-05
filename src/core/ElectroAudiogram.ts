@@ -8,8 +8,8 @@ export default class ElectroAudiogram {
     private margin = 40;
     private xAisGap = 0;
     private yAisGap = 0;
-    private frequency!: Frequency;
-    private decibel!:Decibel;
+    private frequency = new Frequency();
+    private decibel = new Decibel();
 
 
     constructor(canvas: HTMLCanvasElement) {
@@ -46,7 +46,9 @@ export default class ElectroAudiogram {
     private initAxisGapData(){
         this.xAisGap = this.computedXAxisGap();
         this.yAisGap = this.computedYAxisGap();
-        this.decibel = new Decibel(this.yAisGap);
+
+        this.decibel.syncAisGap(this.yAisGap);
+        this.frequency.syncAisGap(this.yAisGap);
     }
 
     /**
@@ -145,15 +147,6 @@ export default class ElectroAudiogram {
      * 绘制标准线
      */
     private drawThresholdLine() {
-        // const y = this.decibel.mapYPosition(25);
-        
-        // this.ctx.beginPath();
-        // this.ctx.setLineDash([5, 10]);
-        // this.ctx.moveTo(this.margin + 10, y);
-        // this.ctx.lineTo(this.canvas.width, y);
-        // this.ctx.lineWidth = 1;
-        // this.ctx.strokeStyle = "#E74133"
-        // this.ctx.stroke();
         const y = this.decibel.mapYPosition(25);
         
         this.ctx.beginPath();

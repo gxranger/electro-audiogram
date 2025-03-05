@@ -4,11 +4,10 @@ export class Decibel {
     private labels = Object.keys(DecibelEnum).filter(key => isNaN(Number(key)));
     private values = Object.keys(DecibelEnum).filter(key => !isNaN(Number(key)));
     private valueMap = new Map();
-    private yAisGap = 0;
+    public yAisGap = 0;
 
-    constructor(yAisGap: number) {
+    constructor() {
         this.initMapData();
-        this.yAisGap = yAisGap;
     }
 
     /**
@@ -33,6 +32,10 @@ export class Decibel {
 
     getLabels() {
         return this.labels;
+    }
+
+    syncAisGap(yAisGap:number) {
+        this.yAisGap = yAisGap;
     }
 
     /**
