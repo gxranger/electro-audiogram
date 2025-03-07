@@ -15,6 +15,8 @@ export enum FrequencyEnum {
   "12kHz" = 12000
 }
 
+export type FrequencyLabel = keyof typeof FrequencyEnum;
+
 
 /**
  * 分贝值
@@ -48,6 +50,8 @@ export enum DecibelEnum {
   "115dB" = 115,
   "120dB" = 120
 }
+
+export type DecibelLabel = keyof typeof DecibelEnum; 
 
 /**
  * 数据状态

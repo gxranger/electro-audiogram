@@ -1,7 +1,7 @@
-import { FrequencyEnum } from "./types";
+import { FrequencyEnum, FrequencyLabel } from "./types";
 
 export class Frequency {
-    private labels = Object.keys(FrequencyEnum).filter(key => isNaN(Number(key)));
+    private labels = Object.keys(FrequencyEnum).filter(key => isNaN(Number(key))) as FrequencyLabel[];
     private values = Object.keys(FrequencyEnum).filter(key => !isNaN(Number(key)));
     private valueMap = new Map();
     private xAisGap = 0;

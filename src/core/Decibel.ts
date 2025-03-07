@@ -1,7 +1,7 @@
-import { DecibelEnum } from "./types";
+import { DecibelEnum, DecibelLabel } from "./types";
 
 export class Decibel {
-    private labels = Object.keys(DecibelEnum).filter(key => isNaN(Number(key)));
+    private labels = Object.keys(DecibelEnum).filter(key => isNaN(Number(key))) as DecibelLabel[];
     private values = Object.keys(DecibelEnum).filter(key => !isNaN(Number(key)));
     private valueMap = new Map();
     public yAisGap = 0;
