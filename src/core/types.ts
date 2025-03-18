@@ -17,7 +17,6 @@ export enum FrequencyEnum {
 
 export type FrequencyLabel = keyof typeof FrequencyEnum;
 
-
 /**
  * 分贝值
  */
@@ -56,25 +55,25 @@ export type DecibelLabel = keyof typeof DecibelEnum;
 /**
  * 数据状态
  * reaction 反应
- * cover 掩蔽
+ * covered 掩蔽
  * soundField 声场
  * 当 soundField 为 true 时，cover 和 reaction 默认值为 false
  */
 export type PointStatus =  {
   soundField: true;
-  cover?: false;
+  covered?: false;
   reaction?: false;
 }
 | {
   soundField?: false;
-  cover: boolean;
+  covered: boolean;
   reaction: boolean;
 };
 
 /**
  * 数据描述类型
  */
-export interface IPoint {
+export type IPoint = {
     /**
      * 频率 (Hz)
      */
@@ -95,4 +94,9 @@ export interface IPoint {
      * 状态
      */  
     status: PointStatus;
+}
+
+export type MarkerColors = {
+  LEFT: string;
+  RIGHT: string;
 }
