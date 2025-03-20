@@ -269,7 +269,7 @@ export default class ElectroAudiogram {
                 'path',
                 'M162.142,142.5l80.5683-80.56836a14.24254,14.24254,0,1,0-20.142-20.142L142,122.35791,61.4317,41.78967a14.24254,14.24254,0,0,0-20.142,20.142L121.858,142.5l-80.5683,80.56824a14.24259,14.24259,0,0,0,20.142,20.14209L142,162.64209l80.5683,80.56824a14.24259,14.24259,0,1,0,20.142-20.14209Z',
             ),
-            AC_LEFT_COVERED_NO_RESPONSE: getAcLeftCoveredNoResponse(this.rightColor),
+            AC_LEFT_COVERED_NO_RESPONSE: getAcLeftCoveredNoResponse(this.leftColor),
             AC_LEFT_UNCOVERED_NO_RESPONSE: this.createMarkerSvgString(
                 this.leftColor,
                 'polygon',
@@ -309,7 +309,7 @@ export default class ElectroAudiogram {
         const x = this.mapFrequencyValueToXPosition.get(frequencyValue)!;
         const y = this.mapDecibelValueToYPosition.get(decibelValue)!;
 
-        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(this.markers.BC_LEFT_COVERED_NO_RESPONSE);
+        img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(this.markers.AC_LEFT_COVERED_NO_RESPONSE);
         img.onload = () => this.ctx.drawImage(img, x, y - 10, 20, 20);
     }
 }
