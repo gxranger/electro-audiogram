@@ -26,13 +26,7 @@ export default class ElectroAudiogram {
     constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d')!;
-        this.initAxisGapData();
         this.initCanvas();
-        this.drawBorder();
-        this.drawXAxis();
-        this.drawYAxis();
-        this.drawThresholdLine();
-        this.addMarker(1000, 25);
     }
 
     /**
@@ -75,7 +69,14 @@ export default class ElectroAudiogram {
     private initCanvas() {
         this.canvas.width = this.gridDimension + (this.margin * 2.5);
         this.canvas.height = this.gridDimension + (this.margin * 2);
+
         this.setCanvasStyle();
+        this.initAxisGapData();
+        this.drawBorder();
+        this.drawXAxis();
+        this.drawYAxis();
+        this.drawThresholdLine();
+        this.addMarker(1000, 25);
     }
 
     /**
