@@ -14,14 +14,14 @@
 **右耳在前、左耳在后<br />
 右耳红色、左耳蓝色<br />
 气导实线、骨导虚线**
-![电测听绘制图](./src/assets/image/test.png)
+![电测听绘制图](./assets/image/test.png)
 
 ## 听力图符号键
 气导、骨导、声场这几个的符号为常用符号，**其他符号根据医院设备情况略有不同。**
-![符号键](./src/assets/image/standard.png)
+![符号键](./assets/image/standard.png)
 
 ## 数据流程
-![数据流程](./src/assets/image/dataSource.png)
+![数据流程](./assets/image/dataSource.png)
 
 ## 业务流程
-![业务流程](./src/assets/image/flow.png)
+![业务流程](./assets/image/flow.png)
