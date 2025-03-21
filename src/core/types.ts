@@ -17,6 +17,15 @@ export const FrequencyEnum = {
 
 export type FrequencyLabels = keyof typeof FrequencyEnum;
 export type FrequencyValues = typeof FrequencyEnum[FrequencyLabels];
+export type FrequencyOptions = {
+  labels: FrequencyLabels[],
+  values: FrequencyValues[],
+};
+
+export type PointsOptions = {
+  decibelOptions: DecibelOptions,
+  frequencyOptions: FrequencyOptions,
+}
 
 /**
  * 分贝值
@@ -53,7 +62,10 @@ export const DecibelEnum = {
 
 export type DecibelLabels = keyof typeof DecibelEnum; 
 export type DecibelValues = typeof DecibelEnum[DecibelLabels];
-
+export type DecibelOptions = {
+  labels: DecibelLabels[],
+  values: DecibelValues[],
+};
 
 type CoveredStatus = 'COVERED' | 'UNCOVERED';
 type ResponseStatus = 'NO_RESPONSE';
@@ -66,7 +78,7 @@ export type PointStatus = CoveredStatus | `${CoveredStatus}_${ResponseStatus}`;
 /**
  * 数据描述类型
  */
-export type IPoint = {
+export type AudiogramData = {
     /**
      * 频率 (Hz)
      */
@@ -90,7 +102,14 @@ export type IPoint = {
 }
 
 export type AudiogramColors = {
-  [key in Lowercase<IPoint['earDirection']>]: string;
+  [key in `${Lowercase<AudiogramData['earDirection']>}Color`]: string;
 }
 
-export type MarkerType = `${IPoint['conductionType']}_${IPoint['earDirection']}_${PointStatus}`;
+export type MarkerType = `${AudiogramData['conductionType']}_${AudiogramData['earDirection']}_${PointStatus}`;
+
+export type Point = {
+  conductionType: AudiogramData['conductionType'],
+  marker: string;
+  value: readonly [number, number];
+};
+export type PointList = Point[];
