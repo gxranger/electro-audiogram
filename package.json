@@ -1,6 +1,6 @@
 {
   "name": "electro-audiogram",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "一个非标准平面坐标系统下的用以表示听力值与频率关系的电测听力图",
   "main": "./dist/index.umd.js",
   "module": "./dist/index.es.js",
