@@ -67,6 +67,11 @@ export type DecibelOptions = {
   values: DecibelValues[],
 };
 
+export type AxisOptions<L,V> = {
+  labels: L[],
+  values: V[],
+}
+
 type CoveredStatus = 'COVERED' | 'UNCOVERED';
 type ResponseStatus = 'NO_RESPONSE';
 
@@ -92,24 +97,26 @@ export type AudiogramData = {
      */  
     conductionType: 'AC' | 'BC';
     /**
-     * 耳朵方向
-     */  
-    earDirection: 'LEFT' | 'RIGHT';
-    /**
      * 状态
      */  
     status: PointStatus;
 }
 
-export type AudiogramColors = {
-  [key in `${Lowercase<AudiogramData['earDirection']>}Color`]: string;
+export interface IAuduigramOptions {
+  mounedEl: HTMLCanvasElement,
+  earDirection: 'LEFT' | 'RIGHT';
+  primaryColor?: string
 }
 
-export type MarkerType = `${AudiogramData['conductionType']}_${AudiogramData['earDirection']}_${PointStatus}`;
+export type MarkerType = `${AudiogramData['conductionType']}_${IAuduigramOptions['earDirection']}_${PointStatus}`;
 
-export type Point = {
+export type AudiometricPoint = {
   conductionType: AudiogramData['conductionType'],
-  marker: string;
-  value: readonly [number, number];
+  markerType: MarkerType;
+  value: readonly [FrequencyValues, DecibelValues];
+  position: [number, number],
 };
-export type PointList = Point[];
+
+export type AudiogramColors = {
+  [color in `${Lowercase<IAuduigramOptions['earDirection']>}Color`]: string;
+}

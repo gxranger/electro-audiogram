@@ -1,9 +1,10 @@
-import { AudiogramColors, MarkerType } from "./types";
+import { AudiogramColors, AudiometricPoint, MarkerType } from "./types";
 
 export class Marker {
     private rightColor:string;
     private leftColor: string;
     private markers:Record<MarkerType, string>;
+    private existingPoints = new Map<string,[number, number]>();
 
     constructor(colors:AudiogramColors) {
         this.rightColor = colors.rightColor;
@@ -11,13 +12,6 @@ export class Marker {
         this.markers = this.createMarkers();
     }
 
-    /**
-     * 生成标记SVG字符串
-     * @param color 16进制颜色值
-     * @param tagName svg标签名
-     * @param propertyName svg属性名
-     * @return svg
-     */
     private createMarkerSvgString(
         color:string, 
         tagName: 'polygon' | 'path',

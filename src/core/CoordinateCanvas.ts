@@ -1,6 +1,6 @@
-import { DecibelOptions, DecibelValues, FrequencyOptions, FrequencyValues, PointsOptions } from "./types";
+import { AxisOptions, DecibelEnum, DecibelLabels, DecibelValues, FrequencyEnum, FrequencyLabels, FrequencyValues } from "./types";
 
-export class Coordinate {
+export class CoordinateCanvas {
     private canvas: HTMLCanvasElement;
     public ctx: CanvasRenderingContext2D;
 
@@ -10,27 +10,26 @@ export class Coordinate {
     private xAisGap = 0;
     private yAisGap = 0;
 
-    private decibelOptions: DecibelOptions;
-    private frequencyOptions: FrequencyOptions;
-    
+    private yAxisOptions: AxisOptions<DecibelLabels, DecibelValues>;
+    private xAxisOptions: AxisOptions<FrequencyLabels, FrequencyValues>;
 
-    public mapFrequencyValueToXPosition = new Map<FrequencyValues, number>();
-    public mapDecibelValueToYPosition = new Map<DecibelValues, number>();
+    public frequencyValueToXPointMap = new Map<FrequencyValues, number>();
+    public decibelValueToYPointMap = new Map<DecibelValues, number>();
 
-    constructor(canvas: HTMLCanvasElement, pointsOptions:PointsOptions) {
+    constructor(canvas: HTMLCanvasElement) {
         this.canvas = canvas;
         this.ctx = canvas.getContext('2d')!;
 
-        this.decibelOptions = pointsOptions.decibelOptions;
-        this.frequencyOptions = pointsOptions.frequencyOptions;
+        this.yAxisOptions = this.getAxisOptions<DecibelLabels, DecibelValues>(DecibelEnum);
+        this.xAxisOptions = this.getAxisOptions<FrequencyLabels, FrequencyValues>(FrequencyEnum);
+        
+        this.initialize();
     }
 
-    /**
-     * 初始化 Canvas 样式和尺寸
-     */
-    initCanvas() {
+    initialize() {
         this.canvas.width = this.gridDimension + (this.margin * 2.5);
         this.canvas.height = this.gridDimension + (this.margin * 2);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         this.setCanvasStyle();
         this.initAxisGapData();
@@ -40,28 +39,26 @@ export class Coordinate {
         this.drawThresholdLine();
     }
 
-    /**
-     * 初始化 X、Y 轴线间距数据
-     */
-    private initAxisGapData(){
-        const decibelLabels = this.decibelOptions.labels.filter(item => !item.includes('5'));
+    private getAxisOptions<L,V>(enumObj: typeof FrequencyEnum | typeof DecibelEnum ) {
+        return {
+            labels: Object.keys(enumObj) as L[],
+            values: Object.values(enumObj) as V[],
+        }
+    }
 
-        this.xAisGap = this.gridDimension / this.frequencyOptions.labels.length;
+    private initAxisGapData(){
+        const decibelLabels = this.yAxisOptions.labels.filter(item => !item.includes('5'));
+
+        this.xAisGap = this.gridDimension / this.xAxisOptions.labels.length;
         this.yAisGap = this.gridDimension / decibelLabels.length;
     }
 
-    /**
-     * 设置 Canvas 绘制样式
-     */
     private setCanvasStyle() {
         this.ctx.font = '15px sans-serif';
         this.ctx.textAlign = 'right';
         this.ctx.fillStyle = 'black';
     }
 
-    /**
-     * 绘制矩形边框
-     */
     private drawBorder() {
         this.ctx.beginPath();
         this.ctx.rect(
@@ -74,9 +71,6 @@ export class Coordinate {
         this.ctx.stroke();
     }
 
-    /**
-     * 绘制X轴网格
-     */
     private drawXAxis(){
         this.ctx.beginPath();
 
@@ -84,20 +78,20 @@ export class Coordinate {
         
         let gap = this.xAisGap;
 
-        for (let i = 0; i < this.frequencyOptions.labels.length; i++) {
+        for (let i = 0; i < this.xAxisOptions.labels.length; i++) {
             gap += this.xAisGap;
 
             // 建立画布X轴坐标映射
-            this.mapFrequencyValueToXPosition.set(this.frequencyOptions.values[i], gap - 10);
+            this.frequencyValueToXPointMap.set(this.xAxisOptions.values[i], gap - 10);
             
             // 绘制刻度线
             this.ctx.moveTo(gap, this.margin);
             this.ctx.lineTo(gap, this.canvas.height);
 
             // 绘制频率label
-            if (i < this.frequencyOptions.labels.length) {
+            if (i < this.xAxisOptions.labels.length) {
                 this.ctx.fillText(
-                    this.frequencyOptions.labels[i],
+                    this.xAxisOptions.labels[i],
                     gap + 15, 
                     this.margin * 0.7,
                 );
@@ -109,15 +103,12 @@ export class Coordinate {
         this.ctx.stroke();
     }
 
-    /**
-     * 绘制Y轴网格
-     */
     private drawYAxis(){
         this.ctx.beginPath();
         
         const lineWidth = 0.3;
-        const labels = this.decibelOptions.labels.filter(item => !item.includes('5'));
-        const values = this.decibelOptions.values
+        const labels = this.yAxisOptions.labels.filter(item => !item.includes('5'));
+        const values = this.yAxisOptions.values
         .sort((a,b) => +a-(+b))
         .filter(item => !item.toString().includes('5'));
 
@@ -127,9 +118,9 @@ export class Coordinate {
             gap += this.yAisGap;
 
             // 建立画布Y轴坐标映射
-            this.mapDecibelValueToYPosition.set(values[i], gap);
+            this.decibelValueToYPointMap.set(values[i], gap);
             if (values[i]!== 120) {
-                this.mapDecibelValueToYPosition.set(
+                this.decibelValueToYPointMap.set(
                     values[i] + 5 as DecibelValues, 
                     gap + (this.yAisGap / 2),
                 );
@@ -149,11 +140,8 @@ export class Coordinate {
         this.ctx.stroke();
     }
 
-    /**
-     * 绘制标准线
-     */
     private drawThresholdLine() {
-        const y = this.mapDecibelValueToYPosition.get(25)!;
+        const y = this.decibelValueToYPointMap.get(25)!;
         
         this.ctx.beginPath();
         this.ctx.setLineDash([5, 10]);
