@@ -6,24 +6,19 @@ export default defineConfig({
     extensions: ['.ts', '.js', '.json']
   },
   build: {
+    target: 'es2015',
+    minify: true,
     lib: {
       entry: 'src/index.ts',
       name: 'ElectroAudiogram',
-      fileName: (format) => `electro-audiogram.${format}.js`
+      formats: ['es', 'umd'],
+      fileName: (format) => `index.${format}.js`
     },
-    rollupOptions: {
-      external: ['react', 'vue'], // 排除框架依赖
-      output: {
-        globals: {
-          react: 'React',
-          vue: 'Vue'
-        }
-      }
-    }
   },
   plugins: [
-    dts({ // 生成类型声明
+    dts({
       insertTypesEntry: true,
+      outDir: 'dist/types',
     })
   ],
 });
