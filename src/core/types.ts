@@ -102,13 +102,13 @@ export type AudiogramData = {
     status: PointStatus;
 }
 
-export interface IAuduigramOptions {
-  mounedEl: HTMLCanvasElement,
+export interface IAudiogramOptions {
+  mountedEl: HTMLCanvasElement,
   earDirection: 'LEFT' | 'RIGHT';
   primaryColor?: string
 }
 
-export type MarkerType = `${AudiogramData['conductionType']}_${IAuduigramOptions['earDirection']}_${PointStatus}`;
+export type MarkerType = `${AudiogramData['conductionType']}_${IAudiogramOptions['earDirection']}_${PointStatus}`;
 
 export type AudiometricPoint = {
   conductionType: AudiogramData['conductionType'],
@@ -118,5 +118,5 @@ export type AudiometricPoint = {
 };
 
 export type AudiogramColors = {
-  [color in `${Lowercase<IAuduigramOptions['earDirection']>}Color`]: string;
+  [color in `${Lowercase<IAudiogramOptions['earDirection']>}Color`]: string;
 }

@@ -20,41 +20,53 @@ const rightElectroAudiogram = new ElectroAudiogram({
     earDirection: 'RIGHT',
 });
 
-// 当听力数据变化时，调用render则以参数中新数据重新渲染canvas
+// 当听力数据变化时，调用render则以最新数据重新渲染canvas
 leftElectroAudiogram.render([
     {
         frequency: 125,
         decibel: 25,
         conductionType: 'BC',
-        earDirection: 'RIGHT',
         status: 'COVERED',
     },
     {
         frequency: 250,
         decibel: 65,
         conductionType: 'BC',
-        earDirection: 'RIGHT',
         status: 'UNCOVERED',
     },
     {
         frequency: 125,
         decibel: 25,
         conductionType: 'AC',
-        earDirection: 'RIGHT',
         status: 'COVERED',
     },
     {
         frequency: 250,
         decibel: 65,
         conductionType: 'AC',
-        earDirection: 'RIGHT',
         status: 'UNCOVERED',
     }
 ]);
 ```
-详细类型参见类型声明
+详细类型参见类型声明文件
 ```typescript
-// 听力数据类型
+// 实例化参数
+interface IAudiogramOptions {
+  mountedEl: HTMLCanvasElement,
+  earDirection: 'LEFT' | 'RIGHT';
+  primaryColor?: string
+}
+
+// 数据状态
+type PointStatus = 'COVERED' | 'UNCOVERED' | 'COVERED_NO_RESPONSE' | 'UNCOVERED_NO_RESPONSE';
+
+// 分贝值约束
+type DecibelValues = 0 | 10 | -10 | 5 | -5 | 15 | 20 | 25 | 30 | 35 | 40 | 45 | 50 | 55 | 60 | 65 | 70 | 75 | 80 | 85 | 90 | 95 | 100 | 105 | 110 | 115 | 120;
+
+// 频率值约束
+type FrequencyValues = 125 | 250 | 500 | 1000 | 2000 | 3000 | 4000 | 6000 | 8000 | 10000 | 12000
+
+// 听力数据
 type AudiogramData = {
     /**
      * 频率 (Hz)

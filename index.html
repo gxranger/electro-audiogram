@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElectroAudiogram Canvas Test</title>
+</head>
+
+<body>
+    <canvas id="audiogramCanvas" />
+</body>
+
+<script type="module">
+    import ElectroAudiogram from './dist/index.es.js';
+
+    // 获取 Canvas 元素
+    const canvas = document.getElementById('audiogramCanvas');
+
+    console.log("🚀 ------------------------------------🚀");
+    console.log("🚀 ~ index.html:18 ~ canvas:", canvas);
+    console.log("🚀 ------------------------------------🚀");
+
+
+    // 初始化
+    const audiogram = new ElectroAudiogram({
+        mountedEl: canvas,
+        earDirection: 'RIGHT',
+    });
+
+    console.log("🚀 ------------------------------------------🚀");
+    console.log("🚀 ~ index.html:26 ~ audiogram:", audiogram);
+    console.log("🚀 ------------------------------------------🚀");
+
+    audiogram.renderData([
+        {
+            frequency: 125,
+            decibel: 25,
+            conductionType: 'BC',
+            earDirection: 'RIGHT',
+            status: 'COVERED',
+        },
+        {
+            frequency: 250,
+            decibel: 65,
+            conductionType: 'BC',
+            earDirection: 'RIGHT',
+            status: 'UNCOVERED',
+        },
+        {
+            frequency: 125,
+            decibel: 25,
+            conductionType: 'AC',
+            earDirection: 'RIGHT',
+            status: 'COVERED',
+        },
+        {
+            frequency: 250,
+            decibel: 65,
+            conductionType: 'AC',
+            earDirection: 'RIGHT',
+            status: 'UNCOVERED',
+        }
+    ])
+</script>
+
+</html>

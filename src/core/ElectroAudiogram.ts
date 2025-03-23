@@ -1,6 +1,6 @@
 import { CoordinateCanvas } from "./CoordinateCanvas";
 import { Marker } from "./Marker";
-import { AudiogramData, IAuduigramOptions, MarkerType } from "./types";
+import { AudiogramData, IAudiogramOptions, MarkerType } from "./types";
 
 export default class ElectroAudiogram {
     private coordinateCanvas: CoordinateCanvas;
@@ -8,7 +8,7 @@ export default class ElectroAudiogram {
 
     private existingPoints = new Map<string,readonly [number, number]>();
 
-    private earDirection: IAuduigramOptions['earDirection'];
+    private earDirection: IAudiogramOptions['earDirection'];
     private colors = {
         rightColor: '#e82600',
         leftColor: '#003491',
@@ -16,14 +16,14 @@ export default class ElectroAudiogram {
 
     
 
-    constructor(options:IAuduigramOptions) {
+    constructor(options:IAudiogramOptions) {
         const { 
-            mounedEl,
+            mountedEl,
             earDirection,
             primaryColor,
          } = options;
 
-        this.coordinateCanvas = new CoordinateCanvas(mounedEl);
+        this.coordinateCanvas = new CoordinateCanvas(mountedEl);
 
         this.earDirection = earDirection;
 

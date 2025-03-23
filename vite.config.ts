@@ -21,4 +21,8 @@ export default defineConfig({
       outDir: 'dist/types',
     })
   ],
+  server: {
+    port: 3000, // 指定开发服务器端口
+    open: true, // 自动打开浏览器
+  },
 });
