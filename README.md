@@ -3,7 +3,7 @@
 
 ## 用法
 ```bash
-npm i electro-audiogram -S
+pnpm i electro-audiogram
 ```
 
 ```javascript
@@ -20,7 +20,10 @@ const rightElectroAudiogram = new ElectroAudiogram({
     earDirection: 'RIGHT',
 });
 
-// 当听力数据变化时，调用render则以最新数据重新渲染canvas
+/**
+ * 当听力数据变化时，调用render则以最新数据重新渲染canvas
+ * 若听力数据坐标重叠，marker则向X轴偏移
+ */
 leftElectroAudiogram.render([
     {
         frequency: 125,
@@ -85,6 +88,56 @@ type AudiogramData = {
      */  
     status: PointStatus;
 }
+```
+
+vue3使用示例：
+```typescript
+<script lang="ts" setup>
+import ElectroAudiogram from 'electro-audiogram';
+
+const canvasInstance = ref();
+
+onMounted(() => {
+  const electroAudiogram = new ElectroAudiogram({
+    mountedEl: canvasInstance.value,
+    earDirection: 'RIGHT',
+  });
+
+  electroAudiogram.render([
+    {
+      frequency: 125,
+      decibel: 25,
+      conductionType: 'BC',
+      status: 'COVERED',
+    },
+    {
+      frequency: 250,
+      decibel: 65,
+      conductionType: 'BC',
+      status: 'UNCOVERED',
+    },
+    {
+      frequency: 125,
+      decibel: 25,
+      conductionType: 'AC',
+      status: 'COVERED',
+    },
+    {
+      frequency: 250,
+      decibel: 65,
+      conductionType: 'AC',
+      status: 'UNCOVERED',
+    },
+  ]);
+});
+</script>
+
+<template>
+  <div>
+    <canvas ref="canvasInstance" />
+  </div>
+</template>
+
 ```
 ## 参考资料
 **《GBZ49-2014职业性噪声聋的诊断》**<br />
