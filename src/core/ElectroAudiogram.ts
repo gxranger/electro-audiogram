@@ -34,8 +34,8 @@ export default class ElectroAudiogram {
         this.marker = new Marker(this.colors);
     }
     
-    private groupDataByConductionType(auduigramList: AudiogramData[]) {
-        return auduigramList.reduce(
+    private groupDataByConductionType(audiogramList: AudiogramData[]) {
+        return audiogramList.reduce(
             (pre, cur) => {
                 const groupKey = cur.conductionType;
 
@@ -83,11 +83,7 @@ export default class ElectroAudiogram {
         };
     }
 
-    render(auduigramList: AudiogramData[]) {
-        if (!auduigramList?.length || auduigramList.length === 0) {
-            throw new Error('渲染数据不能为空！');
-        }
-
+    render(audiogramList: AudiogramData[]) {
         this.coordinateCanvas.initialize();
         this.existingPoints.clear();
 
@@ -95,7 +91,9 @@ export default class ElectroAudiogram {
         const ctx = canvas.ctx;
         const currentColor = Reflect.get(this.colors, `${this.earDirection.toLowerCase()}Color`);
 
-        const grouped = this.groupDataByConductionType(auduigramList);
+        if (!Array.isArray(audiogramList) || !audiogramList.length) return;
+        
+        const grouped = this.groupDataByConductionType(audiogramList);
 
         grouped.forEach((group,conductionType) => {
             ctx.beginPath();
